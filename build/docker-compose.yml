@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  server:
+    image: "collaborate-storage:1.0"
+    ports:
+      - "2412:2412"
+    restart: always
+    command: [ "/bin/sh", "-c", "/collaborate-storage server --file-path /etc/storage.dat" ]
+
+  client:
+    image: "collaborate-storage:1.0"
+    environment:
+      - CLIENT_ID=1
+      - UPD_MAX=20
+      - UPD_PERIOD=1s
+      - POLL_PERIOD=500ms
+      - SERVER_URL=server:2412
+    command: [ "/bin/sh", "-c", "/collaborate-storage client --server-url=$${SERVER_URL} --client-id=$${CLIENT_ID} --updates-max=$${UPD_MAX} --updates-period=$${UPD_PERIOD} --poll-period=$${POLL_PERIOD}" ]
+    deploy:
+      replicas: 4
